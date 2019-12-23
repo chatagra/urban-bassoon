@@ -1,10 +1,9 @@
-import fs from "fs";
-import {TextDecoder} from 'text-encoding';
+import fs from 'fs';
+import {uint8ToString} from "./utils";
 
 export default class Reader {
 
     constructor() {
-        this.decoder = new TextDecoder();
         this.fp = null;
         this.position = 0;
     }
@@ -13,8 +12,25 @@ export default class Reader {
         this.fp = fs.openSync(path, 'r');
     }
 
+    closeFile(){
+        if(!this.fp){
+            return;
+        }
+
+        fs.closeSync(this.fp);
+    }
+
     getPosition(){
         return this.position;
+    }
+
+    skipDataAfterHeader(){
+        this.readLong();
+        this.readLong();
+        this.readPackedValue();
+        this.readPackedValue();
+        this.readPackedValue();
+        this.readPackedValue();
     }
 
     readLong() {
@@ -30,13 +46,14 @@ export default class Reader {
     }
 
     readString(len) {
-        if(len > 0){
-            const buffer = new Uint8Array(len);
-            this.position += fs.readSync(this.fp, buffer, 0, len, null);
-            return this.decoder.decode(buffer);
+        if(!len){
+            return '';
         }
 
-        return "";
+        const buffer = new Uint8Array(len);
+        this.position += fs.readSync(this.fp, buffer, 0, len, null);
+
+        return uint8ToString(buffer);
     }
 
     readPackedValue() {

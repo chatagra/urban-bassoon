@@ -1,4 +1,4 @@
-import Loader from "./loader";
+import Loader from './loader';
 
 const args = process.argv.slice(2);
 

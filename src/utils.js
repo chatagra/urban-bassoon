@@ -68,10 +68,10 @@ const unpackWideString = (str) => {
 
     let resStr3 = resStr2;
 
-    let z = "";
+    let z = '';
     for(let i = 0; i < size2; i++) {
         z += resStr3.substr(0,1);
-        z += "\0";
+        z += '\0';
         resStr3 = resStr3.substr(1);
     }
 
@@ -123,7 +123,17 @@ const setCharAt = (str, index, chr) => {
     return str.substr(0, index) + chr + str.substr(index + 1);
 };
 
+const uint8ToString = (buffer) => {
+    const CHUNK_SZ = 0x8000;
+    const c = [];
+    for (let i = 0; i < buffer.length; i+=CHUNK_SZ) {
+        c.push(String.fromCharCode.apply(null, buffer.subarray(i, i + CHUNK_SZ)));
+    }
+    return c.join('');
+};
+
 export {
     getPackedValue,
-    unpackWideString
+    unpackWideString,
+    uint8ToString
 }
